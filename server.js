@@ -8,7 +8,7 @@ const app = express();
 const PORT = 3000;
 
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://back-end-portifolio-ayran.vercel.app'],
+  origin: ['http://localhost:5173', 'https://ayran-vieira-dev.vercel.app'],
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type'],
   credentials: true
