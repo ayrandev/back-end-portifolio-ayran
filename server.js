@@ -7,7 +7,12 @@ require("dotenv").config();
 const app = express();
 const PORT = 3000;
 
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:5173', 'https://back-end-portifolio-ayran.vercel.app'],
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type'],
+  credentials: true
+}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
