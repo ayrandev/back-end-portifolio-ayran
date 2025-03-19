@@ -7,40 +7,12 @@ require("dotenv").config();
 const app = express();
 const PORT = 3000;
 
-const allowCors = fn => async (req, res) => {
-  res.setHeader('Access-Control-Allow-Credentials', true)
-  res.setHeader('Access-Control-Allow-Origin', '*')
-  // another common pattern
-  // res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT')
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  )
-  if (req.method === 'OPTIONS') {
-    res.status(200).end()
-    return
-  }
-  return await fn(req, res)
-}
-
-const handler = (req, res) => {
-  const d = new Date()
-  res.end(d.toString())
-}
-
-module.exports = allowCors(handler)
-
-const allowedOrigins = [
-  "https://ayran-vieira-lb56alnlf-ayrandevs-projects.vercel.app", // O domínio do front-end
-  "https://ayran-vieira-dev.vercel.app" // Caso também esteja usando este domínio
-];
 
 app.use(cors({
-  origin: allowedOrigins,
+  origin: 'Access-Control-Allow-Origin: https://ayran-vieira-6jqugt191-ayrandevs-projects.vercel.app',
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type'],
-  credentials: true
+  credentials: true,
 }));
 
 app.use(express.json());
@@ -62,6 +34,7 @@ transporter.verify((error, success) => {
   }
 });
 
+// Rota para envio do formulário
 app.post("/form", async (req, res) => {
   const { name, email, phone, message } = req.body;
 
@@ -82,13 +55,14 @@ app.post("/form", async (req, res) => {
 
   try {
     await transporter.sendMail(mailOptions);
-    res.status(200).json({ message: "Sua menssagem foi enviada com sucesso, agradecemos seu contato!" });
+    res.status(200).json({ message: "Sua mensagem foi enviada com sucesso, agradecemos seu contato!" });
   } catch (error) {
     console.error("Erro ao enviar email:", error);
     res.status(500).json({ error: "Falha ao enviar o email." });
   }
 });
 
+// Inicializar o servidor
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
