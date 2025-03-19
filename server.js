@@ -7,12 +7,17 @@ require("dotenv").config();
 const app = express();
 const PORT = 3000;
 
+// Configuração CORS
+const allowedOrigins = [
+  "https://ayran-vieira-dev.vercel.app",
+];
 
+// Aplicando CORS globalmente
 app.use(cors({
-  origin: 'Access-Control-Allow-Origin: https://ayran-vieira-6jqugt191-ayrandevs-projects.vercel.app',
+  origin: allowedOrigins,  // Origem permitida
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type'],
-  credentials: true,
+  credentials: true,  // Habilita o envio de cookies
 }));
 
 app.use(express.json());
@@ -34,7 +39,6 @@ transporter.verify((error, success) => {
   }
 });
 
-// Rota para envio do formulário
 app.post("/form", async (req, res) => {
   const { name, email, phone, message } = req.body;
 
@@ -62,7 +66,6 @@ app.post("/form", async (req, res) => {
   }
 });
 
-// Inicializar o servidor
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
