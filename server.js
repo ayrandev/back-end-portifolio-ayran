@@ -9,14 +9,21 @@ const PORT = 3000;
 
 // Configuração CORS
 
-app.use(express.json());
-app.use((req, res, next) => {
+const corsOptions = {
+  origin: "*",
+  methods: "GET,POST,OPTIONS",
+  allowedHeaders: "Content-Type,Authorization",
+  credentials: true
+};
+app.use(cors(corsOptions));
+
+// Middleware para resolver preflight requests (OPTIONS)
+app.options("*", (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type");
-  app.use(cors());
-  next();
-})
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.sendStatus(204);
+});
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
