@@ -7,13 +7,19 @@ require("dotenv").config();
 const app = express();
 const PORT = 3000;
 
+const allowedOrigins = [
+  "https://ayran-vieira-lb56alnlf-ayrandevs-projects.vercel.app", // O domínio do front-end
+  "https://ayran-vieira-dev.vercel.app" // Caso também esteja usando este domínio
+];
+
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://ayran-vieira-dev.vercel.app'],
+  origin: allowedOrigins,
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type'],
   credentials: true
 }));
-app.use(bodyParser.json());
+
+app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const transporter = nodemailer.createTransport({
@@ -41,7 +47,7 @@ app.post("/form", async (req, res) => {
 
   const mailOptions = {
     from: `${email}`,
-    to: "ayrandeveloper@gmail.com",
+    to: "ayran.developer@gmail.com",
     subject: `${email}`,
     text: `Você recebeu uma nova mensagem do formulário:
       Nome: ${name}
