@@ -10,6 +10,7 @@ const PORT = 3000;
 // Configuração CORS
 const allowedOrigins = [
   "https://ayran-vieira-dev.vercel.app",
+  "http://localhost:5173/",
 ];
 
 // Aplicando CORS globalmente
