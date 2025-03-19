@@ -26,6 +26,8 @@ app.use(cors({
   credentials: true, // ⚠️ Necessário para autenticação e cookies
 }));
 
+app.options('*', cors());
+
 // Middleware para JSON
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
