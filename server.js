@@ -8,23 +8,16 @@ const app = express();
 const PORT = 3000;
 
 // Configuração CORS
-const allowedOrigins = [
-  "https://ayran-vieira-dev.vercel.app",
-  "https://ayran-vieira-h9tzkrv9o-ayrandevs-projects.vercel.app",
-  "https://ayran-vieira-dev-git-main-ayrandevs-projects.vercel.app",
-  "https://ayran-vieira-dev-ayrandevs-projects.vercel.app",
-  "http://localhost:5173/"
-];
-
-// Aplicando CORS globalmente
-app.use(cors({
-  origin: allowedOrigins,  // Origem permitida
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type'],
-  credentials: true,  // Habilita o envio de cookies
-}));
 
 app.use(express.json());
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type");
+  app.use(cors());
+  next();
+})
+
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const transporter = nodemailer.createTransport({
