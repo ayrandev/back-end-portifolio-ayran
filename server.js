@@ -5,27 +5,30 @@ const nodemailer = require("nodemailer");
 require("dotenv").config();
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
-// Configuração CORS
+// 🚀 Configuração do CORS para produção
+const allowedOrigins = [
+  "http://localhost:5173", // Ambiente local
+  "https://ayran-vieira-dev.vercel.app", // Frontend na Vercel
+];
 
-const corsOptions = {
-  origin: "*",
-  methods: "GET,POST,OPTIONS",
-  allowedHeaders: "Content-Type,Authorization",
-  credentials: true
-};
-app.use(cors(corsOptions));
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Acesso bloqueado por CORS"));
+    }
+  },
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true, // ⚠️ Necessário para autenticação e cookies
+}));
 
-// Middleware para resolver preflight requests (OPTIONS)
-app.options("*", (req, res) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.sendStatus(204);
-});
-
+// Middleware para JSON
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -53,7 +56,7 @@ app.post("/form", async (req, res) => {
   const mailOptions = {
     from: `${email}`,
     to: "ayran.developer@gmail.com",
-    subject: `${email}`,
+    subject: `Nova mensagem de ${name}`,
     text: `Você recebeu uma nova mensagem do formulário:
       Nome: ${name}
       Email: ${email}
@@ -63,7 +66,7 @@ app.post("/form", async (req, res) => {
 
   try {
     await transporter.sendMail(mailOptions);
-    res.status(200).json({ message: "Sua mensagem foi enviada com sucesso, agradecemos seu contato!" });
+    res.status(200).json({ message: "Sua mensagem foi enviada com sucesso!" });
   } catch (error) {
     console.error("Erro ao enviar email:", error);
     res.status(500).json({ error: "Falha ao enviar o email." });
