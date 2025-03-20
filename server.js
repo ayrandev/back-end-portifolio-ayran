@@ -7,31 +7,33 @@ require("dotenv").config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// 🚀 Configuração do CORS para produção
+// 🚀 Configuração do CORS para produção e local
 const allowedOrigins = [
   "http://localhost:5173", // Ambiente local
   "https://ayran-vieira-dev.vercel.app", // Frontend na Vercel
 ];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Acesso bloqueado por CORS"));
-    }
-  },
-  methods: ["GET", "POST", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true, // ⚠️ Necessário para autenticação e cookies
-}));
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header("Access-Control-Allow-Origin", origin);
+    res.header("Access-Control-Allow-Credentials", "true");
+  }
+  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
-app.options('*', cors());
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204);
+  }
+
+  next();
+});
 
 // Middleware para JSON
+app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
 
+// Configuração do Nodemailer
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -48,6 +50,7 @@ transporter.verify((error, success) => {
   }
 });
 
+// Rota para envio de formulário
 app.post("/form", async (req, res) => {
   const { name, email, phone, message } = req.body;
 
@@ -75,6 +78,7 @@ app.post("/form", async (req, res) => {
   }
 });
 
+// Inicia o servidor
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
